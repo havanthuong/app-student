@@ -16,7 +16,7 @@ CREATE TABLE Students (
     class varchar(255) NOT NULL
 );
 INSERT INTO Students(name,age,class) VALUES
-('ĐỖ Ngọc Hoàng', 15, '10A1'),
+('Đỗ Ngọc Hoàng', 15, '10A1'),
 ('Hà Văn Khắc Cương', 15, '10A1'),
 ('Trần Phi Long', 15, '10A1'),
 ('Hoàng Nhật Tiên', 15, '10A1'),
