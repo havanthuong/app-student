@@ -1,5 +1,46 @@
 <?php
-
+    require "include/Database.php";
+    if(isset($_POST['register'])){
+	    if(!isset($_POST['username'],$_POST['password'],$_POST['repeat-password'],$_POST['age'])){
+		    echo
+                '<div class="alert alert-danger" role="alert">
+                    Empty field(s)
+                </div>';
+	    }
+	    if(empty($_POST['username'])||empty($_POST['password'])||empty($_POST['repeat-password'])||empty($_POST['age'])){
+		    exit('Values empty');
+	    }
+	    if($stms = $conn->prepare('select  userid, password from users where username = :username')){
+		    $stms->bindParam(':username', $_POST['username'], PDO::PARAM_STR);
+		    $stms->execute();
+		    if($row = $stms->fetch(PDO::FETCH_NUM)){
+			    echo 'This usename is exists. Try again!';
+		    }
+		    else{
+		        if($_POST['password']!=$_POST['repeat-password']){
+		            echo "Your password not match. try again";
+                }
+		        else{
+                    if($stms = $conn->prepare('insert into users(username, password, age) values(?,?,?)')){
+                        $pass=password_hash($_POST['password'], PASSWORD_DEFAULT);
+                        $stms->bindParam(1, $_POST['username'], PDO::PARAM_STR);
+                        $stms->bindParam(2, $pass, PDO::PARAM_STR);
+                        $stms->bindParam(3, $_POST['age'], PDO::PARAM_STR);
+                        $stms->execute();
+                        echo 'Register success';
+                        echo '<a href="Login.php">login now!</a>';
+                    }
+                    else{
+                        echo 'Register error';
+                    }
+                }
+            }
+		    $stms = null;
+	    }
+	    else{
+	        echo 'Error occurred';
+        }
+    }
 ?>
 <!doctype html>
 <html lang="en">
@@ -14,7 +55,7 @@
 	      integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ=="
 	      crossorigin="anonymous" referrerpolicy="no-referrer"/>
 	<link rel="stylesheet" href="css/Register.css">
-	<title>Document</title>
+	<title>Register</title>
 </head>
 <body>
 	<section class="vh-100 bg-image"
@@ -26,25 +67,25 @@
 						<div class="card" style="border-radius: 15px;">
 							<div class="card-body p-5">
 								<h2 class="text-uppercase text-center mb-5">Create an account</h2>
-								<form>
+								<form method="post" action="<?php echo $_SERVER['PHP_SELF'] ?>">
 									<div class="form-outline mb-4">
-										<input type="text" id="form3Example1cg" class="form-control form-control-lg" />
-										<label class="form-label" for="form3Example1cg">User Name</label>
+										<input type="text" id="form3Examplecg" name="username" class="form-control form-control-lg" />
+										<label class="form-label" for="form3Examplecg">User Name</label>
 									</div>
 									<div class="form-outline mb-4">
-										<input type="password" id="form3Example4cg" class="form-control form-control-lg" />
-										<label class="form-label" for="form3Example4cg">Password</label>
+										<input type="password" id="form3Example5cg" name="password" class="form-control form-control-lg" />
+										<label class="form-label" for="form3Example5cg">Password</label>
 									</div>
 									<div class="form-outline mb-4">
-										<input type="password" id="form3Example4cdg" class="form-control form-control-lg" />
+										<input type="password" id="form3Example4cdg" name="repeat-password" class="form-control form-control-lg" />
 										<label class="form-label" for="form3Example4cdg">Repeat your password</label>
 									</div>
 									<div class="form-outline mb-4">
-										<input type="text" id="form3Example1cg" class="form-control form-control-lg" />
+										<input type="text" id="form3Example1cg" name="age" class="form-control form-control-lg" />
 										<label class="form-label" for="form3Example1cg">Your Age</label>
 									</div>
 									<div class="d-flex justify-content-center">
-										<button type="button"
+										<button type="submit" name="register"
 										        class="btn btn-success btn-block btn-lg gradient-custom-4 text-body">Register</button>
 									</div>
 									<p class="text-center text-muted mt-5 mb-0">Have already an account?
