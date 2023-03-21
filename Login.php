@@ -1,7 +1,19 @@
 <?php
     require 'include/Database.php';
 	if (isset($_POST['submit'])) {
-		header("Location: ViewStudents.php");
+	    if(empty($_POST['email'])||empty($_POST['password'])){
+	        exit('Empty field(s)');
+        }
+	    $username=$_POST['email'];
+	    $stms=$conn->prepare('select * from users where userName = ?');
+	    $stms->bindParam(1,$username,PDO::PARAM_STR);
+		$stms->execute();
+		$result = $stms->fetch(PDO::FETCH_ASSOC);
+		echo $username;
+	    if(password_verify($_POST['password'],$result['password'])){
+		    echo "<script>window.open('ViewStudents.php?','_self')</script>";
+        }
+	    
 	}
 ?>
 <!doctype html>

@@ -2,43 +2,44 @@
     require "include/Database.php";
     if(isset($_POST['register'])){
 	    if(!isset($_POST['username'],$_POST['password'],$_POST['repeat-password'],$_POST['age'])){
-		    echo
-                '<div class="alert alert-danger" role="alert">
+		    echo "<script><div class=\"alert alert-danger\" role=\"alert\">
                     Empty field(s)
-                </div>';
+                </div></script>";
 	    }
 	    if(empty($_POST['username'])||empty($_POST['password'])||empty($_POST['repeat-password'])||empty($_POST['age'])){
 		    exit('Values empty');
 	    }
-	    if($stms = $conn->prepare('select  userid, password from users where username = :username')){
+	    if($stms = $conn->prepare('select password from users where userName = :username')){
 		    $stms->bindParam(':username', $_POST['username'], PDO::PARAM_STR);
 		    $stms->execute();
+	        echo "<script>alert('You are Logged in into admin panel')</script>";
+		    
 		    if($row = $stms->fetch(PDO::FETCH_NUM)){
 			    echo 'This usename is exists. Try again!';
 		    }
 		    else{
 		        if($_POST['password']!=$_POST['repeat-password']){
-		            echo "Your password not match. try again";
+			        echo "<script>alert('Your password not match. Try again')</script>";
                 }
 		        else{
-                    if($stms = $conn->prepare('insert into users(username, password, age) values(?,?,?)')){
+                    if($stms = $conn->prepare('insert into users ( userName, password, age) values(?,?,?)')){
                         $pass=password_hash($_POST['password'], PASSWORD_DEFAULT);
                         $stms->bindParam(1, $_POST['username'], PDO::PARAM_STR);
                         $stms->bindParam(2, $pass, PDO::PARAM_STR);
                         $stms->bindParam(3, $_POST['age'], PDO::PARAM_STR);
                         $stms->execute();
-                        echo 'Register success';
-                        echo '<a href="Login.php">login now!</a>';
+	                    echo "<script>alert('Register success. Direct Login Page')</script>";
+	                    echo "<script>window.open('Login.php?','_self')</script>";
                     }
                     else{
-                        echo 'Register error';
+	                    echo "<script>alert('Register error')</script>";
                     }
                 }
             }
 		    $stms = null;
 	    }
 	    else{
-	        echo 'Error occurred';
+		    echo "<script>alert('Error occurred)</script>";
         }
     }
 ?>
